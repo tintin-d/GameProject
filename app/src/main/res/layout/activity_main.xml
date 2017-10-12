@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/cave"
     android:layout_height="match_parent"
     tools:context="com.example.valentin.gameproject.MainActivity">
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="@string/playstr"
             android:id="@+id/btnPlay"
-            android:textColor="@color/colorYellow"
+            android:textColor="@color/colorBlue"
             android:textSize="20dp"
             android:background="@color/colorBlack"
             android:layout_margin="10dp"
@@ -31,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="@string/scores"
             android:id="@+id/btnScore"
-            android:textColor="@color/colorYellow"
+            android:textColor="@color/colorBlue"
             android:textSize="20dp"
             android:layout_below="@id/btnPlay"
             android:layout_margin="10dp"
