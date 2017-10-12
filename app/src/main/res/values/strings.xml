@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GameProject</string>
+    <string name="playstr">PLAY</string>
+    <string name="scores">Scores</string>
 </resources>
