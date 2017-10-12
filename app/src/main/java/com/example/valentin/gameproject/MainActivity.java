@@ -7,8 +7,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
+
+
 
 public class MainActivity extends AppCompatActivity {
+    public static final String EXTRA_MESSAGE = "com.example.valentin.MESSAGE";
 
     public Button play;
     public Button score;
@@ -32,15 +43,23 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.score:
+                sendMessage(null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    public void sendMessage(View view) {
+        Intent intent = new Intent(this, Score_activity.class);
+        String message ="hello!!!!";
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
+
+
     public void playPush(View v){
-        inPlay=true;
-        play.setVisibility(View.GONE);
-        score.setVisibility(View.GONE);
+        Intent intent = new Intent(this, Game_activity.class);
+        startActivity(intent);
     }
 }

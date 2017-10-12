@@ -2,4 +2,10 @@
     <string name="app_name">GameProject</string>
     <string name="playstr">PLAY</string>
     <string name="scores">Scores</string>
+    <string name="ret">Retour</string>
+
+    <string name="title_activity_game">Game</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

@@ -39,6 +39,7 @@
             android:layout_below="@id/btnPlay"
             android:layout_margin="10dp"
             android:background="@color/colorBlack"
+            android:onClick="sendMessage"
             />
 
     </LinearLayout>
