@@ -7,6 +7,7 @@
     <color name="colorBlack">#000000</color>
     <color name="colorDarkRed">#9e0803</color>
     <color name="colorYellow">#ffe900</color>
+    <color name="tranparent">#00000000</color>
 
     <color name="black_overlay">#66000000</color>
 

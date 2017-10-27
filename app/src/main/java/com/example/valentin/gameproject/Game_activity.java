@@ -2,11 +2,13 @@ package com.example.valentin.gameproject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.nio.Buffer;
 
@@ -29,11 +31,12 @@ public class Game_activity extends Activity implements SensorEventListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_layout);
-        gameView=(Game_view)findViewById(R.id.game_view);
+        gameView=findViewById(R.id.game_view);
         mSensorManager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer=mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         accelSopported=mSensorManager.registerListener(this,mAccelerometer,SensorManager.SENSOR_DELAY_FASTEST);
         speedX=speedY=1;
+
     }
 
     @Override
@@ -65,12 +68,21 @@ public class Game_activity extends Activity implements SensorEventListener{
     @Override
     public void onPause(){
         mSensorManager.unregisterListener(this, mAccelerometer);
+        gameView.onPauseMySurfaceView();
         super.onPause();
     }
 
-
-    public void decompte(){
+    public void resume(){
+        gameView.onResumeMySurfaceView();
+        Log.d("test","test");
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        resume();
+    }
+
 
     public void move(){
         float curX=gameView.getMyX();
