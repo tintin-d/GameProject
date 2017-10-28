@@ -22,18 +22,16 @@ public class Game_view extends SurfaceView implements Runnable{
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     SurfaceHolder surfaceHolder;
     volatile boolean running = false;
-    Bitmap mBitmap;
     float x=100;float y=100;
     private Drawable mCustomImage;
     private Drawable mCustomImageB;
     boolean first=true;
-
+    Balle b=new Balle(this.getContext());
 
 
     public Game_view(Context context) {
         super(context);
         surfaceHolder=getHolder();
-       // this.setBackgroundResource(R.drawable.cave2);
         mCustomImage = context.getResources().getDrawable(R.drawable.cannon1);
         mCustomImageB = context.getResources().getDrawable(R.drawable.cave2);
 
@@ -45,13 +43,11 @@ public class Game_view extends SurfaceView implements Runnable{
         mCustomImage = context.getResources().getDrawable(R.drawable.cannon1);
         mCustomImageB = context.getResources().getDrawable(R.drawable.cave2);
 
-        //this.setBackgroundResource(R.drawable.cave2);
     }
 
     public Game_view(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         surfaceHolder=getHolder();
-        //this.setBackgroundResource(R.drawable.cave2);
         mCustomImageB = context.getResources().getDrawable(R.drawable.cannon1);
         mCustomImage = context.getResources().getDrawable(R.drawable.cave2);
 
@@ -103,13 +99,29 @@ public class Game_view extends SurfaceView implements Runnable{
                 if(x<=0){x=0;}
                 if(y>=maxH-20){y=maxH-20;}
                 if(y<=20){y=20;}
+
+                //redessinement des éléments y compris le fond
                 mCustomImageB.setBounds(0,0,maxW,maxH);
                 mCustomImageB.draw(canvas);
                 mCustomImage.setBounds((int)x,(int)y,(int)x+70,(int)y+80);
                 mCustomImage.draw(canvas);
+
+                //implémentation de la balle
+                if(b.getFirstUse()){
+                    b.setFirstUse(false);
+                    b.setY(y);
+                }
+
+                b.getBalle().setBounds((int) x,(int)y, (int)x+70,(int)y+80);
+
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
         }
+    }
+
+
+    public void tir(){
+
     }
 
 
@@ -117,15 +129,10 @@ public class Game_view extends SurfaceView implements Runnable{
         return x;
     }
 
-    public float getMyY() {
-        return y;
-    }
 
     public void setMyX(float x) {
         this.x = x;
     }
 
-    public void setMyY(float y) {
-        this.y = y;
-    }
+
 }
