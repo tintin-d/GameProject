@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 
+import java.util.HashMap;
+
 import static java.security.AccessController.getContext;
 
 /**
@@ -12,15 +14,15 @@ import static java.security.AccessController.getContext;
 
 public class Balle {
     private float x,y;
-    private int tempsRafale;
     private int speed;
-    private Drawable balle;
     private Boolean firstUse=true;
+    private HashMap<Integer,Drawable> balle=new HashMap<Integer,Drawable>();
 
     public Balle(Context context){
-        balle = context.getResources().getDrawable(R.drawable.pb1);
+        balle.put(1,context.getResources().getDrawable(R.drawable.pb1));
+        balle.put(2,context.getResources().getDrawable(R.drawable.pb2));
+        balle.put(3,context.getResources().getDrawable(R.drawable.pb3));
         speed=1;
-        tempsRafale=1;
     }
 
     public void setX(float x) {
@@ -31,16 +33,9 @@ public class Balle {
         this.y = y;
     }
 
-    public void setTempsRafale(int tempsRafale) {
-        this.tempsRafale = tempsRafale;
-    }
 
     public void setSpeed(int speed) {
         this.speed = speed;
-    }
-
-    public void setBalle(Drawable balle) {
-        this.balle = balle;
     }
 
     public Boolean getFirstUse() {
@@ -61,16 +56,17 @@ public class Balle {
         return y;
     }
 
-    public int getTempsRafale() {
-        return tempsRafale;
-    }
 
     public int getSpeed() {
         return speed;
     }
 
-    public Drawable getBalle() {
-        return balle;
+    public Drawable getBalle(int key) {
+        return balle.get(key);
+    }
+
+    public void incrementY(){
+        setY(getY()-7*speed);
     }
 
 
