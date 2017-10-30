@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     tools:context="com.example.valentin.gameproject.Game_activity"
     android:layout_height="match_parent"
-    android:background="@drawable/cave2"
     >
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        >
+
         <com.example.valentin.gameproject.Game_view
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -31,10 +25,11 @@
             android:textStyle="bold"
             android:textColor="@color/colorBlack"
             android:background="@color/tranparent"
+
             />
         <TextView
+            android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
-            android:layout_marginTop="15dp"
             android:layout_height="wrap_content"
             android:text="@string/score"
             android:textSize="16dp"
@@ -44,6 +39,5 @@
 
 
 
-    </RelativeLayout>
 
 </RelativeLayout>

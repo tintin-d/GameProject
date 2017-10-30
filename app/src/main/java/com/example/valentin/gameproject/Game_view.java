@@ -13,13 +13,17 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.security.Key;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 /*
  Created by valentin on 12/10/17.
  */
 
 public class Game_view extends SurfaceView implements Runnable{
 
+    List<Integer>imagesTarget= new ArrayList<Integer>();
     Thread thread = null;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     SurfaceHolder surfaceHolder;
@@ -28,8 +32,8 @@ public class Game_view extends SurfaceView implements Runnable{
     private Drawable mCustomImage;
     private Drawable mCustomImageB;
     boolean first=true;
-    Balle b=new Balle(this.getContext());
-    HashMap<Integer,Target> targetHashMap=new HashMap<Integer,Target>();
+    Balle b;
+    HashMap<Integer,Target> targetHashMap;
 
 
     public Game_view(Context context) {
@@ -37,7 +41,9 @@ public class Game_view extends SurfaceView implements Runnable{
         surfaceHolder=getHolder();
         mCustomImage = context.getResources().getDrawable(R.drawable.cannon1);
         mCustomImageB = context.getResources().getDrawable(R.drawable.cave2);
-
+        targetHashMap=new HashMap<Integer,Target>();
+        b=new Balle(this.getContext());
+        insertTarget(4);
     }
 
     public Game_view(Context context, AttributeSet attrs) {
@@ -45,16 +51,19 @@ public class Game_view extends SurfaceView implements Runnable{
         surfaceHolder=getHolder();
         mCustomImage = context.getResources().getDrawable(R.drawable.cannon1);
         mCustomImageB = context.getResources().getDrawable(R.drawable.cave2);
-
+        targetHashMap=new HashMap<Integer,Target>();
+        b=new Balle(this.getContext());
+        insertTarget(4);
     }
 
     public Game_view(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         surfaceHolder=getHolder();
-        mCustomImageB = context.getResources().getDrawable(R.drawable.cannon1);
-        mCustomImage = context.getResources().getDrawable(R.drawable.cave2);
-
-
+        mCustomImage = context.getResources().getDrawable(R.drawable.cannon1);
+        mCustomImageB = context.getResources().getDrawable(R.drawable.cave2);
+        targetHashMap=new HashMap<Integer,Target>();
+        b=new Balle(this.getContext());
+        insertTarget(4);
     }
 
 
@@ -92,8 +101,8 @@ public class Game_view extends SurfaceView implements Runnable{
                 paint.setColor(Color.RED);
                 if(first){
                     //première apparition du cannon
-                    x=canvas.getWidth()/2;
-                    y=canvas.getHeight()-100;
+                    x=maxW/2-((maxW/7)/2);
+                    y=canvas.getHeight()-(maxH/9);
                     first=false;
                 }
                 //Bornes de l'écran
@@ -114,35 +123,59 @@ public class Game_view extends SurfaceView implements Runnable{
                 //on lui donnera des coordonnées dès son initialisation
                 if(b.getFirstUse()){
                     b.setFirstUse(false);
-                    b.setY(y-7);
-                    b.setX(x+(maxW/7)/2-12);
+                    b.setY(y-maxH/60);
+                    b.setX(x+((maxW/7)/2)-(maxW/20)/2);
                 }
                 float bx=b.getX(); float by=b.getY();
 
                 Drawable maBalle=b.getBalle(1);
                 maBalle.setBounds((int)bx,(int)by, (int)bx+(maxW/20),(int)by+(maxW/20));
-                b.incrementY();
+                b.setSize(maxW/20);
+                b.incrementY(maxH/50);
                 if(b.getY()<0){
                     b.setFirstUse(true);
                 }
                 maBalle.draw(canvas);
 
-                insertTarget();
 
 
+                //insertion des cibles
+                int i=0;
+                for(Integer key: targetHashMap.keySet()){
+                    Target cible=targetHashMap.get(key);
+                    Drawable d= cible.getTarget().get(key);
+
+                    int w=maxW / 80;
+                    int h=maxH / 12;
+                    cible.setSize(maxW/w);
+
+
+                    int fx =w  + (i % (maxW/w)) * h;
+                    int fy =w;
+                        int sx =h  + (i % (maxW/w)) * h;
+                        int sy =h;
+
+                        i++;
+
+                    d.setBounds(fx,fy,sx,sy);
+                    d.draw(canvas);
+
+                }
+
+
+
+                isTouched();
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
         }
     }
 
 
-    public void tir(){
-
-    }
-
-    public void insertTarget(){
-        targetHashMap.put(1,new Target(this.getContext()));
-        Log.d("test",""+targetHashMap.get(1).Randomize());
+    public void insertTarget(int nb){
+        for(int i=1;i<=nb;i++) {
+            targetHashMap.put(i, new Target(this.getContext()));
+            imagesTarget.add(targetHashMap.get(i).Randomize());
+        }
     }
 
     public float getMyX() {
@@ -152,6 +185,26 @@ public class Game_view extends SurfaceView implements Runnable{
 
     public void setMyX(float x) {
         this.x = x;
+    }
+
+
+    public boolean isTouched(){
+        Boolean touched=false;
+        float bx=b.getX();
+        float by=b.getY();
+        float bxS=bx+b.getSize();
+        float byS=by+b.getSize();
+        for (Integer k : targetHashMap.keySet()){
+            Target cible=targetHashMap.get(k);
+            float tx=cible.getX();
+            float ty=cible.getY();
+            float txS=tx+cible.getSize();
+            float tyS=ty+cible.getSize();
+            if((bx>txS || bxS<tx)&&(by<tyS || byS>ty)){touched=true;}
+
+        }
+        Log.d("test",""+touched);
+        return touched;
     }
 
 

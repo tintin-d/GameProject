@@ -16,6 +16,10 @@ public class Target {
     private int speed;
     private Boolean firstUse=true;
 
+
+
+    private int size;
+
     public Target(Context context){
         target.put(1,context.getResources().getDrawable(R.drawable.pk1));
         target.put(2,context.getResources().getDrawable(R.drawable.pk2));
@@ -76,4 +80,13 @@ public class Target {
     public void setFirstUse(Boolean firstUse) {
         this.firstUse = firstUse;
     }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
 }
