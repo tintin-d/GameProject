@@ -12,6 +12,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.security.Key;
 import java.util.ArrayList;
@@ -23,17 +26,23 @@ import java.util.List;
 
 public class Game_view extends SurfaceView implements Runnable{
 
-    List<Integer>imagesTarget= new ArrayList<Integer>();
-    Thread thread = null;
+    private List<Integer>imagesTarget= new ArrayList<Integer>();
+    private Thread thread = null;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    SurfaceHolder surfaceHolder;
+    private SurfaceHolder surfaceHolder;
     volatile boolean running = false;
     float x=100;float y=100;
     private Drawable mCustomImage;
     private Drawable mCustomImageB;
     boolean first=true;
-    Balle b;
-    HashMap<Integer,Target> targetHashMap;
+    private Balle b;
+    private HashMap<Integer,Target> targetHashMap;
+
+
+
+    private Boolean gameOver=false;
+
+
 
 
     public Game_view(Context context) {
@@ -65,6 +74,9 @@ public class Game_view extends SurfaceView implements Runnable{
         b=new Balle(this.getContext());
         insertTarget(4);
     }
+
+
+
 
 
 
@@ -131,7 +143,7 @@ public class Game_view extends SurfaceView implements Runnable{
                 Drawable maBalle=b.getBalle(1);
                 maBalle.setBounds((int)bx,(int)by, (int)bx+(maxW/20),(int)by+(maxW/20));
                 b.setSize(maxW/20);
-                b.incrementY(maxH/50);
+                b.incrementY(maxH/200);
                 if(b.getY()<0){
                     b.setFirstUse(true);
                 }
@@ -156,16 +168,18 @@ public class Game_view extends SurfaceView implements Runnable{
                         int sy =h;
 
                         i++;
-
+                    cible.setX(fx);
+                    cible.setY(fy);
                     d.setBounds(fx,fy,sx,sy);
                     d.draw(canvas);
-
+                    //Log.d("coord",""+key+", "+cible.getX()+", "+cible.getY()+", "+ cible.getSize());
                 }
 
 
 
                 isTouched();
                 surfaceHolder.unlockCanvasAndPost(canvas);
+
             }
         }
     }
@@ -200,12 +214,48 @@ public class Game_view extends SurfaceView implements Runnable{
             float ty=cible.getY();
             float txS=tx+cible.getSize();
             float tyS=ty+cible.getSize();
-            if((bx>txS || bxS<tx)&&(by<tyS || byS>ty)){touched=true;}
+           // Log.d("coord",""+bx+" "+bxS);
+           // Log.d("coord",""+tx+" "+txS);
+
+            touched=rectangle_collision(bx,by,bxS,byS,tx,ty,txS,tyS);
+            ///Log.d("test", "" + touched+ " "+ k);
+
 
         }
-        Log.d("test",""+touched);
+
         return touched;
     }
+    boolean rectangle_collision(float x_1, float y_1, float width_1, float height_1, float x_2, float y_2, float width_2, float height_2)
+    {
+        return !(x_1 > x_2+width_2 || x_1+width_1 < x_2 || y_1 > y_2+height_2 || y_1+height_1 < y_2);
+    }
 
+
+
+
+    public void gameOver(Boolean bool){
+        setGameOver(bool);
+        running=!bool;
+        if(!bool){
+            first=true;
+            b.setFirstUse(true);
+            targetHashMap=new HashMap<Integer,Target>();
+            ////A modifier
+            insertTarget(5);
+            thread = new Thread(this);
+            thread.start();
+        }
+
+
+
+
+    }
+    public Boolean getGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(Boolean gameOver) {
+        this.gameOver = gameOver;
+    }
 
 }

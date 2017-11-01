@@ -9,7 +9,17 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.GenericArrayType;
 import java.nio.Buffer;
 
 /**
@@ -25,13 +35,28 @@ public class Game_activity extends Activity implements SensorEventListener{
     private boolean started=false;
     private float speedX;
     private float speedY;
-
+    private RelativeLayout scoreview;
+    private EditText pseudoEdit;
+    private TextView scoreText;
+    private TextView latText;
+    private TextView lonText;
+    private final String FILENAME = "scores_file";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_layout);
+        scoreview=findViewById(R.id.saveScore);
+        pseudoEdit=findViewById(R.id.pseudoLabel);
+        scoreText=findViewById(R.id.monScore);
+        latText=findViewById(R.id.mlatitude);
+        lonText=findViewById(R.id.mlongitude);
+
         gameView=findViewById(R.id.game_view);
+
+
+
+
         mSensorManager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer=mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         accelSopported=mSensorManager.registerListener(this,mAccelerometer,SensorManager.SENSOR_DELAY_FASTEST);
@@ -74,7 +99,6 @@ public class Game_activity extends Activity implements SensorEventListener{
 
     public void resume(){
         gameView.onResumeMySurfaceView();
-        Log.d("test","test");
     }
 
     @Override
@@ -85,11 +109,67 @@ public class Game_activity extends Activity implements SensorEventListener{
 
 
     public void move(){
-        float curX=gameView.getMyX();
-        //float curY=gameView.getMyY();
-        gameView.setMyX((curX+speedX));
-       // gameView.setMyY((curY+speedY*1));
-        gameView.invalidate();
+        if(gameView.getGameOver()) {
+
+
+        }
+        else {
+
+            float curX = gameView.getMyX();
+            //float curY=gameView.getMyY();
+            gameView.setMyX((curX + speedX));
+            // gameView.setMyY((curY+speedY*1));
+            gameView.invalidate();
+        }
     }
+
+    //si jeu terminé game over a vrai.
+    public void over(View v){
+        gameView.gameOver(true);
+        scoreview.setVisibility(View.VISIBLE);
+    }
+
+
+    //si sauvegardé on reprends le jeu
+    public void saveScore(View v) {
+        gameView.gameOver(false);
+        scoreview.setVisibility(View.INVISIBLE);
+        writeScore();
+
+    }
+
+
+
+    public void writeScore(){
+        String sep="\n";
+        try {
+
+            FileInputStream fis = openFileInput(FILENAME);
+            BufferedReader r = new BufferedReader(new InputStreamReader(fis));
+            StringBuilder total = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) {
+                total.append(line).append('\n');
+            }
+            fis.close();
+
+            FileOutputStream fos =  openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write((""+total).getBytes());
+            fos.write(pseudoEdit.getText().toString().getBytes());
+            fos.write(sep.getBytes());
+            fos.write(scoreText.getText().toString().getBytes());
+            fos.write(sep.getBytes());
+            fos.write(latText.getText().toString().getBytes());
+            fos.write(sep.getBytes());
+            fos.write(lonText.getText().toString().getBytes());
+            fos.write(sep.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            Log.d("File: ", "impossible de modifier le fichier");
+        }
+
+
+    }
+
 
 }

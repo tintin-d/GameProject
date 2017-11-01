@@ -25,7 +25,7 @@
             android:textStyle="bold"
             android:textColor="@color/colorBlack"
             android:background="@color/tranparent"
-
+            android:onClick="over"
             />
         <TextView
             android:layout_alignParentBottom="true"
@@ -35,6 +35,83 @@
             android:textSize="16dp"
             android:id="@+id/curScore"
             />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@color/colorBlack"
+            android:id="@+id/saveScore"
+            android:visibility="invisible"
+            >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/score"
+                    android:textSize="30dp"
+                    android:textColor="@color/colorWhite"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/label1"
+                    />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@+id/monScore"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mlatitude"
+                    android:text="50"
+                    android:textSize="11dp"
+                    android:textColor="@color/colorYellow"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mlongitude"
+                    android:text="25"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="25sp"
+                    android:textColor="@color/colorYellow"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/monScore"
+                android:text="50"
+                android:layout_below="@+id/label1"
+                android:layout_marginBottom="5dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorWhite"
+                />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/monScore"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="30dp"
+                    android:textColor="@color/colorWhite"
+                    android:id="@+id/pseudoLabel"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:layout_below="@+id/pseudoLabel"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginBottom="20dp"
+                    android:onClick="saveScore"/>
+
+        </RelativeLayout>
 
 
 

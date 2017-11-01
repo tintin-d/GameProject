@@ -15,6 +15,7 @@ public class Target {
     private float x,y;
     private int speed;
     private Boolean firstUse=true;
+    private  boolean touched;
 
 
 
@@ -32,7 +33,7 @@ public class Target {
         target.put(9,context.getResources().getDrawable(R.drawable.pk9));
         target.put(10,context.getResources().getDrawable(R.drawable.pk10));
         target.put(11,context.getResources().getDrawable(R.drawable.pk11));
-
+        touched=false;
 
     }
 
@@ -87,6 +88,15 @@ public class Target {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+
+    public boolean hasBeenTouched() {
+        return touched;
+    }
+
+    public void setTouched(boolean hasBeenTouched) {
+        this.touched = hasBeenTouched;
     }
 
 }
