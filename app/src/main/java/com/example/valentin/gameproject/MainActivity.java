@@ -19,7 +19,7 @@ import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.example.valentin.MESSAGE";
+
 
     public Button play;
     public Button score;
@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendMessage(View view) {
         Intent intent = new Intent(this, Score_activity.class);
-        String message ="hello!!!!";
-        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
 

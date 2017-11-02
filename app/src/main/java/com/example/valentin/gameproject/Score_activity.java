@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -43,21 +44,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import android.view.View.OnClickListener;
 
 public class Score_activity extends ListActivity {
 
     private Button test;
     private ListView listScores;
     private ArrayList<Map<String,String>> list = new ArrayList<Map<String,String>>();
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public boolean mRequestingLocationUpdates;
-    private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest mLocationRequest;
-    private LocationManager locationManager;
-    private LocationCallback mLocationCallback;
-    private final String REQUESTING_LOCATION_UPDATES_KEY="myKey";
     private final String FILENAME = "scores_file";
     private ArrayList<Score> mesScores=new ArrayList<Score>();
+    private ArrayList<Map<String,String>> sortedList;
+    public static final String EXTRA_MESSAGE = "com.example.valentin.MESSAGE";
 
 
     @Override
@@ -67,18 +64,38 @@ public class Score_activity extends ListActivity {
 
         listScores=(ListView)findViewById(android.R.id.list);
 
-        // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-
+        //initialisation affichage score
+        sortedList = new ArrayList<Map<String,String>>();
         readScores();
-        //saveScores();
-       displaySort();
+        displaySort();
 
+        //Listener permettant d'afficher la carte.
+        listScores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String tokens[]=adapterView.getAdapter().getItem(i).toString().split(" ");
+                String ps=null;
+                String sc=null;
+                if(tokens[0].contains("1")) {
+                     ps = tokens[0].substring(tokens[0].lastIndexOf("=") + 1, tokens[0].lastIndexOf(","));
+                     sc = tokens[1].substring(tokens[1].lastIndexOf("=") + 1, tokens[1].lastIndexOf("}"));
+                }
+                else{
+                     sc = tokens[0].substring(tokens[0].lastIndexOf("=") + 1, tokens[0].lastIndexOf(","));
+                     ps = tokens[1].substring(tokens[1].lastIndexOf("=") + 1, tokens[1].lastIndexOf("}"));
+                }
+
+                for(Score key: mesScores) {
+                    if(key.getPseudo().equals(ps) && key.getScore()==Integer.parseInt(sc))
+                    map(key.getPseudo()+"/"+key.getScore()+"/"+key.getLatitude()+"/"+key.getLongitude());
+                }
+            }
+        });
     }
 
 
-
+    //ajout d'un score dans la liste des scores
     public void addCell(Score sc){
         mesScores.add(sc);
         Map<String, String> maplist= new HashMap<String, String>();
@@ -89,8 +106,6 @@ public class Score_activity extends ListActivity {
 
 
     public void displaySort(){
-        ArrayList<Map<String,String>> sortedList = new ArrayList<Map<String,String>>();
-
         while(!(list.isEmpty())){
             Map<String, String> curMap=new HashMap<String,String>();
             curMap=(list.get(0));
@@ -115,6 +130,7 @@ public class Score_activity extends ListActivity {
         int[] to = { android.R.id.text1, android.R.id.text2 };
         SimpleAdapter adapter = new SimpleAdapter(this, sortedList, android.R.layout.simple_list_item_2, from, to);
         setListAdapter(adapter);
+
     }
 
 
@@ -148,26 +164,25 @@ public class Score_activity extends ListActivity {
             FileInputStream fis = openFileInput(FILENAME);
 
             BufferedReader r = new BufferedReader(new InputStreamReader(fis));
-            StringBuilder total = new StringBuilder();
             String line;
             while ((line = r.readLine()) != null ) {
-                //total.append(line).append('\n');
+                //En temps normal l'écriture et la lscture des données dans notre fichier se fait de manière
+                //symétrique. Aucun control n'a donc été réalisé vu qu'aucun problème ne devrait se poser.
                 String pseudo=line;
                 int score=Integer.parseInt(r.readLine());
                 float lat=Float.parseFloat(r.readLine());
                 float lon=Float.parseFloat(r.readLine());
                 addCell(new Score(pseudo,score,lat,lon));
             }
-
             fis.close();
         }catch (IOException e){
             Log.d("File: ", "impossible de lire le fichier");
         }
     }
 
-
-    public void map(View view) {
+    public void map(String message) {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
 }
