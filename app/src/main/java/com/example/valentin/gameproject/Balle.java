@@ -3,6 +3,7 @@ package com.example.valentin.gameproject;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.util.Log;
 
 import java.util.HashMap;
 
@@ -18,6 +19,8 @@ public class Balle {
     private Boolean firstUse=true;
     private HashMap<Integer,Drawable> balle=new HashMap<Integer,Drawable>();
     private int size;
+    private float cx,cy;
+    private int radius;
 
     public Balle(Context context){
         balle.put(1,context.getResources().getDrawable(R.drawable.pb1));
@@ -25,20 +28,21 @@ public class Balle {
         balle.put(3,context.getResources().getDrawable(R.drawable.pb3));
         size=0;
         speed=1;
+        Log.d("cons","Balle");
     }
 
     public void setX(float x) {
         this.x = x;
+        this.cx=x+(size/2);
     }
 
     public void setY(float y) {
         this.y = y;
+        //offcet rajouté pour centrer la zone de collision avec l'image
+        this.cy=y+(size/2)+(size/10);
     }
 
 
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
 
     public Boolean getFirstUse() {
         return firstUse;
@@ -49,7 +53,6 @@ public class Balle {
     }
 
     public float getX() {
-
         return x;
     }
 
@@ -57,10 +60,6 @@ public class Balle {
         return y;
     }
 
-
-    public int getSpeed() {
-        return speed;
-    }
 
     public Drawable getBalle(int key) {
         return balle.get(key);
@@ -77,8 +76,15 @@ public class Balle {
 
     public void setSize(int size) {
         this.size = size;
+        setRadius(size);
     }
 
+    //adaptation du rayon en fonction de l'image à l'écran
+    public void setRadius(int size){this.radius=size/2-(size/7);}
+    public int getRadius(){return this.radius;}
+
+    public float getCx(){return cx;}
+    public float getCy(){return cy;}
 
 
 }

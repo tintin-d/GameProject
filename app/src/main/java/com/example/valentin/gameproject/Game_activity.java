@@ -57,6 +57,7 @@ public class Game_activity extends Activity implements SensorEventListener{
     private RelativeLayout scoreview;
     private EditText pseudoEdit;
     private TextView scoreText;
+    private TextView curScore;
     private TextView latText;
     private TextView lonText;
     private final String FILENAME = "scores_file";
@@ -82,6 +83,7 @@ public class Game_activity extends Activity implements SensorEventListener{
         scoreText=findViewById(R.id.monScore);
         latText=findViewById(R.id.mlatitude);
         lonText=findViewById(R.id.mlongitude);
+        curScore=findViewById(R.id.curScore);
 
         gameView=findViewById(R.id.game_view);
 
@@ -91,6 +93,8 @@ public class Game_activity extends Activity implements SensorEventListener{
         mAccelerometer=mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         accelSopported=mSensorManager.registerListener(this,mAccelerometer,SensorManager.SENSOR_DELAY_FASTEST);
         speedX=speedY=1;
+
+        Log.d("create","gameAct");
 
     }
 
@@ -153,22 +157,27 @@ public class Game_activity extends Activity implements SensorEventListener{
 
     public void move(){
         if(gameView.getGameOver()) {
-            //on arrete de bouger le cannon
+            over(null);
         }
         else {
 
             float curX = gameView.getMyX();
-            //float curY=gameView.getMyY();
             gameView.setMyX((curX + speedX));
-            // gameView.setMyY((curY+speedY*1));
+            curScore.setText("Score: "+gameView.getMonScore());
             gameView.invalidate();
+            Log.d("target",""+gameView.getTargetHashMap().isEmpty());
+            if(gameView.getTargetHashMap().isEmpty()){
+                gameView.insertTarget(1,6);
+            }
         }
     }
 
     //si jeu terminé game over a vrai.
     public void over(View v){
-        gameView.gameOver(true);
+        gameView.setGameOver(true);
+        scoreText.setText(""+gameView.getMonScore());
         scoreview.setVisibility(View.VISIBLE);
+        gameView.gameOver(true);
     }
 
 
@@ -182,7 +191,9 @@ public class Game_activity extends Activity implements SensorEventListener{
             gameView.gameOver(false);
             scoreview.setVisibility(View.INVISIBLE);
             writeScore();
+            gameView.setMonScore(0);
         }
+
 
     }
 
@@ -203,14 +214,12 @@ public class Game_activity extends Activity implements SensorEventListener{
                 while ((line = r.readLine()) != null) {
                     total.append(line).append('\n');
 
-                    Log.d("file", "total: " + total);
                 }
                 fis.close();
             }catch (IOException e){Log.d("File","Impossible de lire ou de trouver le ficgier");}
         //block écriture
         try{
                 FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-                Log.d("file","total: "+total);
                 fos.write(("" + total).getBytes());
                 fos.write(pseudoEdit.getText().toString().replace(" ","").getBytes());
                 fos.write(sep.getBytes());
@@ -287,9 +296,6 @@ public class Game_activity extends Activity implements SensorEventListener{
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                Log.d("loc:",String.format(Locale.ENGLISH, "\nLat.: %.4f, Long.: %.4f",
-                                        location.getLatitude(),
-                                        location.getLongitude()));
                                 latText.setText(String.format(Locale.ENGLISH, "%.4f",location.getLatitude()));
                                 lonText.setText(String.format(Locale.ENGLISH, "%.4f",location.getLongitude()));
                             }
@@ -309,9 +315,6 @@ public class Game_activity extends Activity implements SensorEventListener{
 
     private void updateUI(Location location) {
         if (location != null) {
-            Log.d("loc:",String.format(Locale.ENGLISH, "\nLat.: %.4f, Long.: %.4f",
-                    location.getLatitude(),
-                    location.getLongitude()));
             latText.setText(String.format(Locale.ENGLISH, "%.4f",location.getLatitude()));
             lonText.setText(String.format(Locale.ENGLISH, "%.4f",location.getLongitude()));
         }

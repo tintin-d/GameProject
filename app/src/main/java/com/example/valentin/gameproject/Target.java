@@ -2,6 +2,7 @@ package com.example.valentin.gameproject;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -16,6 +17,8 @@ public class Target {
     private int speed;
     private Boolean firstUse=true;
     private  boolean touched;
+    private float cx,cy;
+    private  int radius;
 
 
 
@@ -34,6 +37,7 @@ public class Target {
         target.put(10,context.getResources().getDrawable(R.drawable.pk10));
         target.put(11,context.getResources().getDrawable(R.drawable.pk11));
         touched=false;
+        Log.d("cons","Target");
 
     }
 
@@ -56,6 +60,8 @@ public class Target {
 
     public void setX(float x) {
         this.x = x;
+        //offcet rajouté pour centrer la zone de collision avec l'image
+        this.cx=x+(size/2)-(size/30);
     }
 
     public float getY() {
@@ -64,14 +70,7 @@ public class Target {
 
     public void setY(float y) {
         this.y = y;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
+        this.cy=y+size/2;
     }
 
     public Boolean getFirstUse() {
@@ -88,6 +87,7 @@ public class Target {
 
     public void setSize(int size) {
         this.size = size;
+        setRadius(size);
     }
 
 
@@ -99,4 +99,9 @@ public class Target {
         this.touched = hasBeenTouched;
     }
 
+    public void setRadius(int size){this.radius=size/2-size/7;}
+    public int getRadius(){return this.radius;}
+
+    public float getCx(){return cx;}
+    public float getCy(){return cy;}
 }
