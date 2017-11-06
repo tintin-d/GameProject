@@ -48,20 +48,19 @@ import android.view.View.OnClickListener;
 
 public class Score_activity extends ListActivity {
 
-    private Button test;
-    private ListView listScores;
-    private ArrayList<Map<String,String>> list = new ArrayList<Map<String,String>>();
-    private final String FILENAME = "scores_file";
-    private ArrayList<Score> mesScores=new ArrayList<Score>();
-    private ArrayList<Map<String,String>> sortedList;
-    public static final String EXTRA_MESSAGE = "com.example.valentin.MESSAGE";
+    private ListView listScores; //liste d'affichage des scores
+    private ArrayList<Map<String,String>> list = new ArrayList<Map<String,String>>();//sert également à l'affichage
+    private final String FILENAME = "scores_file";//notre fichier de sauvegarde
+    private ArrayList<Score> mesScores=new ArrayList<Score>(); //stocke les attributs de chaques scores
+    private ArrayList<Map<String,String>> sortedList;//permet de donner un ordre à nos scores
+    public static final String EXTRA_MESSAGE = "com.example.valentin.MESSAGE";//message de l'intent à diffuser à la map
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_activity);
-
+        //liste qui sera affichée à l'écran
         listScores=(ListView)findViewById(android.R.id.list);
 
         //initialisation affichage score
@@ -77,6 +76,7 @@ public class Score_activity extends ListActivity {
                 String tokens[]=adapterView.getAdapter().getItem(i).toString().split(" ");
                 String ps=null;
                 String sc=null;
+                //précaution à prendre car soucis d'ordre selon les appareils
                 if(tokens[0].contains("1")) {
                      ps = tokens[0].substring(tokens[0].lastIndexOf("=") + 1, tokens[0].lastIndexOf(","));
                      sc = tokens[1].substring(tokens[1].lastIndexOf("=") + 1, tokens[1].lastIndexOf("}"));
@@ -85,7 +85,7 @@ public class Score_activity extends ListActivity {
                      sc = tokens[0].substring(tokens[0].lastIndexOf("=") + 1, tokens[0].lastIndexOf(","));
                      ps = tokens[1].substring(tokens[1].lastIndexOf("=") + 1, tokens[1].lastIndexOf("}"));
                 }
-
+                //formatage précis du message à envoyer
                 for(Score key: mesScores) {
                     if(key.getPseudo().equals(ps) && key.getScore()==Integer.parseInt(sc))
                     map(key.getPseudo()+"/"+key.getScore()+"/"+key.getLatitude()+"/"+key.getLongitude());
@@ -104,7 +104,7 @@ public class Score_activity extends ListActivity {
         list.add(maplist);
     }
 
-
+    // un peu d'ordre pour afficher tous les scores
     public void displaySort(){
         while(!(list.isEmpty())){
             Map<String, String> curMap=new HashMap<String,String>();
@@ -117,13 +117,12 @@ public class Score_activity extends ListActivity {
             }
             //n'affichera que les 20 premiers meilleurs scores
             //Les autres faisant tt de même partie du fichier sauvegardé
-            //modifier??
+            //ne marche pas correctement
             int nbElem=1;
             if(nbElem<=20){
                 sortedList.add(curMap);
                 nbElem++;
             }
-
             list.remove(curMap);
         }
         String[] from = { "ligne1", "ligne2" };
@@ -133,45 +132,20 @@ public class Score_activity extends ListActivity {
 
     }
 
-
-    public void saveScores(){
-        String sep="\n";
-
-        try {
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            for(Score sc: mesScores){
-
-                fos.write(sc.getPseudo().getBytes());
-                fos.write(sep.getBytes());
-                fos.write((""+sc.getScore()).getBytes());
-                fos.write(sep.getBytes());
-                fos.write((""+sc.getLatitude()).getBytes());
-                fos.write(sep.getBytes());
-                fos.write((""+sc.getLongitude()).getBytes());
-                fos.write(sep.getBytes());
-
-            }
-            fos.close();
-        } catch (IOException e) {
-            Log.d("File: ", "impossible de modifier le fichier");
-        }
-
-
-    }
-
+    //lis les scores dans le fichier de ssauvegarde
     public void readScores(){
         try{
             FileInputStream fis = openFileInput(FILENAME);
-
             BufferedReader r = new BufferedReader(new InputStreamReader(fis));
             String line;
             while ((line = r.readLine()) != null ) {
-                //En temps normal l'écriture et la lscture des données dans notre fichier se fait de manière
+                //En temps normal l'écriture et la lecture des données dans notre fichier se fait de manière
                 //symétrique. Aucun control n'a donc été réalisé vu qu'aucun problème ne devrait se poser.
                 String pseudo=line;
                 int score=Integer.parseInt(r.readLine());
                 float lat=Float.parseFloat(r.readLine());
                 float lon=Float.parseFloat(r.readLine());
+                //on ajoute de nouvelles cellules à notre liste
                 addCell(new Score(pseudo,score,lat,lon));
             }
             fis.close();
@@ -180,6 +154,7 @@ public class Score_activity extends ListActivity {
         }
     }
 
+    //on  appelle notre activité map en lui passant le message de la cellule sur laqulle on a appuyé
     public void map(String message) {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra(EXTRA_MESSAGE, message);

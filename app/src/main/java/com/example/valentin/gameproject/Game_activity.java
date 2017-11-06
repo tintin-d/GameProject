@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -47,71 +48,71 @@ import android.Manifest;
 
 public class Game_activity extends Activity implements SensorEventListener{
 
+    //gestion des capteurs
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private boolean accelSopported;
+    //notre vue personnalisée
     private Game_view gameView;
-    private boolean started=false;
+    //accélération en x et en y sur les axes des capteurs
     private float speedX;
     private float speedY;
+    //notre layout de score et ses composants
     private RelativeLayout scoreview;
     private EditText pseudoEdit;
     private TextView scoreText;
     private TextView curScore;
     private TextView latText;
     private TextView lonText;
-    private final String FILENAME = "scores_file";
-
-
-
+    private final String FILENAME = "scores_file";//fichier de sauvegarde
     // Request code to use when requesting location permission
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public boolean mRequestingLocationUpdates;
     private FusedLocationProviderClient mFusedLocationClient;
     LocationRequest mLocationRequest;
-    private final String REQUESTING_LOCATION_UPDATES_KEY="myKey";
     private LocationCallback mLocationCallback;
-    LocationManager locationManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_layout);
+        //Relative layout des scores
         scoreview=findViewById(R.id.saveScore);
+        //entrée du pseudo
         pseudoEdit=findViewById(R.id.pseudoLabel);
+        //Score final de la partie
         scoreText=findViewById(R.id.monScore);
+        //latitude
         latText=findViewById(R.id.mlatitude);
+        //longitude
         lonText=findViewById(R.id.mlongitude);
+        //score en bas à gauche de l'écran
         curScore=findViewById(R.id.curScore);
-
+        //vue dans laquelle se déroule la partie
         gameView=findViewById(R.id.game_view);
-
+        //Debut des services de localisation
         beginLocationupsate(savedInstanceState);
 
+        //implémentation des capteurs: on choisis l'accéléromètre avec le delai "fastest" pour
+        //que les mouvements paraissent plus fluides.
         mSensorManager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer=mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         accelSopported=mSensorManager.registerListener(this,mAccelerometer,SensorManager.SENSOR_DELAY_FASTEST);
         speedX=speedY=1;
-
         Log.d("create","gameAct");
-
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
+                //les calculs suivants permettent d'utiliser le capteur correctement.
                 float ax = sensorEvent.values[0];
                 float ay = sensorEvent.values[1];
                 float az = sensorEvent.values[2];
                 double xAngle = Math.atan( ax / (Math.sqrt((ay*ay) + (az*az))));
-               // double yAngle = Math.atan( ay / (Math.sqrt((ax*ax) + (az*az))));
-
-                xAngle *= 180.00;   //yAngle *= 180.00;
-                xAngle /= 3.141592; //yAngle /= 3.141592;
+                xAngle *= 180.00;
+                xAngle /= 3.141592;
                 speedX=-(float)(xAngle/10);
-                //speedY=(float)(yAngle/10);
                 move();
                 break;
             default:
@@ -120,17 +121,15 @@ public class Game_activity extends Activity implements SensorEventListener{
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
+    public void onAccuracyChanged(Sensor sensor, int i) {}
 
     @Override
     public void onPause(){
-        //mSensorManager.unregisterListener(this, mAccelerometer);
+        //on met en pause tous les procesus qui écoutent les capteurs du téléphone
+        mSensorManager.unregisterListener(this, mAccelerometer);
         gameView.onPauseMySurfaceView();
         super.onPause();
         stopLocationUpdates();
-
     }
 
     public void resume(){
@@ -139,6 +138,7 @@ public class Game_activity extends Activity implements SensorEventListener{
 
     @Override
     public void onResume(){
+        //on réactive les services necessaires.
         super.onResume();
         resume();
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -154,18 +154,20 @@ public class Game_activity extends Activity implements SensorEventListener{
 
     }
 
-
+    //methode appelée à chaque rafraichissements du capteur
     public void move(){
+        //si game over est a vrai on lance la methode qui va permettre d'avoir l'écran de auvegarde.
         if(gameView.getGameOver()) {
             over(null);
         }
         else {
-
+            //si game over est a faux on rafraichit les coordonées
             float curX = gameView.getMyX();
             gameView.setMyX((curX + speedX));
             curScore.setText("Score: "+gameView.getMonScore());
             gameView.invalidate();
             Log.d("target",""+gameView.getTargetHashMap().isEmpty());
+            //quand le nombre de cibles est a zero on en remet
             if(gameView.getTargetHashMap().isEmpty()){
                 gameView.insertTarget(1,6);
             }
@@ -176,26 +178,31 @@ public class Game_activity extends Activity implements SensorEventListener{
     public void over(View v){
         gameView.setGameOver(true);
         scoreText.setText(""+gameView.getMonScore());
+        //on affiche 'écran de sauvegarde
         scoreview.setVisibility(View.VISIBLE);
+        //on appele la bonne methode sur notre vue
+        //(nécessaire à cause des deux threads différentes.)
         gameView.gameOver(true);
     }
 
 
     //si sauvegardé on reprends le jeu
     public void saveScore(View v) {
-
+        //Un petit toast affiché si  on a oublié de mettre un pseudo
+        //(déclanche des erreurs sinon)
         if(pseudoEdit.getText().toString().matches("")){
             Toast t=Toast.makeText(getApplicationContext(),"Veuillez entrer un pseudo",Toast.LENGTH_LONG);
             t.show();
         }else {
+            //on relance le jeu après avoir enregistré les données
+            //on remet aussi les donées de jeu à zero
             gameView.gameOver(false);
             scoreview.setVisibility(View.INVISIBLE);
             writeScore();
             gameView.setMonScore(0);
         }
-
-
     }
+
 
 
 //Ecriture du score courant dans la base de sdonnéees.
@@ -209,16 +216,15 @@ public class Game_activity extends Activity implements SensorEventListener{
             try {
                 FileInputStream fis = openFileInput(FILENAME);
                 BufferedReader r = new BufferedReader(new InputStreamReader(fis));
-
                 String line;
                 while ((line = r.readLine()) != null) {
                     total.append(line).append('\n');
-
                 }
                 fis.close();
             }catch (IOException e){Log.d("File","Impossible de lire ou de trouver le ficgier");}
         //block écriture
-        try{
+        //Il faut bien respecter cet enchainement pour que la lecture du fichier se fasse sans problem
+            try{
                 FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
                 fos.write(("" + total).getBytes());
                 fos.write(pseudoEdit.getText().toString().replace(" ","").getBytes());
@@ -230,13 +236,12 @@ public class Game_activity extends Activity implements SensorEventListener{
                 fos.write(lonText.getText().toString().getBytes());
                 fos.write(sep.getBytes());
                 fos.close();
+                //un petit toast pour rassurer le joueur
                 Toast t=Toast.makeText(getApplicationContext(),"Score sauvegardé",Toast.LENGTH_LONG);
                 t.show();
             } catch (IOException e) {
                 Log.d("File: ", "impossible de modifier le fichier");
             }
-
-
     }
 
 
@@ -344,5 +349,6 @@ public class Game_activity extends Activity implements SensorEventListener{
             Toast.makeText(this, "Erreur de sécurité", Toast.LENGTH_LONG).show();
         }
     }
+
 
 }

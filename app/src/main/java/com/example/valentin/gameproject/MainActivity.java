@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         play=(Button)findViewById(R.id.btnPlay);
         score=(Button)findViewById(R.id.btnScore);
     }
+    //on ajoute un menu option pour les scores
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -50,12 +51,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //appel à score activity
     public void sendMessage(View view) {
         Intent intent = new Intent(this, Score_activity.class);
         startActivity(intent);
     }
 
-
+    //appel à game activity
     public void playPush(View v){
         Intent intent = new Intent(this, Game_activity.class);
         startActivity(intent);

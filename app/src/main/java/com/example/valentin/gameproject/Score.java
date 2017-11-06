@@ -5,6 +5,23 @@ package com.example.valentin.gameproject;
  */
 
 public class Score {
+
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
+    private String pseudo;
+    private int score;
+    private float latitude;
+    private float longitude;
+
+    public Score(String p, int s, float lt, float lg){
+        pseudo=p; score=s; latitude=lt; longitude=lg;
+    }
+
+
+//accesseurs des attributs de score
     public String getPseudo() {
         return pseudo;
     }
@@ -33,16 +50,4 @@ public class Score {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
-    }
-
-    private String pseudo;
-    private int score;
-    private float latitude;
-    private float longitude;
-
-    public Score(String p, int s, float lt, float lg){
-        pseudo=p; score=s; latitude=lt; longitude=lg;
-    }
 }

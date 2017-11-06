@@ -30,13 +30,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        //On récupère les données diffusée par l'intent depuis l'écran des scores et on les met
+        // dans un format adéquat (selon leut utilisation
         Intent intent = getIntent();
         locationnMessage= intent.getStringExtra(Score_activity.EXTRA_MESSAGE);
+        //Le message est passé sous une forme bien distincte pour pouvoir êtredécodé ici
         String receivedDatas[]=locationnMessage.split("/");
-        markerText=receivedDatas[0]+": "+receivedDatas[1]+"pts";
         lat=Float.parseFloat(receivedDatas[2]);
         lon=Float.parseFloat(receivedDatas[3]);
+        //l'affichage trop long ne permet par de voir tout le texte enté comme l'aurai voulu la consigne
+        markerText=receivedDatas[0]+": "+receivedDatas[1]+"pts"+"\n lat: "+lat+" lon: "+lon;
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -67,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng scoreLoc = new LatLng(lat,lon);
+        //On place le marqueur
         mMap.addMarker(new MarkerOptions().position(scoreLoc).title(markerText)).showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(scoreLoc));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(scoreLoc, 15));

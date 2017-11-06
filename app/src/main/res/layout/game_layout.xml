@@ -25,7 +25,6 @@
             android:textStyle="bold"
             android:textColor="@color/colorBlack"
             android:background="@color/tranparent"
-            android:onClick="over"
             />
         <TextView
             android:layout_alignParentBottom="true"

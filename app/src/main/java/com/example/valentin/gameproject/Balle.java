@@ -15,7 +15,6 @@ import static java.security.AccessController.getContext;
 
 public class Balle {
     private float x,y;
-    private int speed;
     private Boolean firstUse=true;
     private HashMap<Integer,Drawable> balle=new HashMap<Integer,Drawable>();
     private int size;
@@ -27,7 +26,6 @@ public class Balle {
         balle.put(2,context.getResources().getDrawable(R.drawable.pb2));
         balle.put(3,context.getResources().getDrawable(R.drawable.pb3));
         size=0;
-        speed=1;
         Log.d("cons","Balle");
     }
 
@@ -38,11 +36,9 @@ public class Balle {
 
     public void setY(float y) {
         this.y = y;
-        //offcet rajouté pour centrer la zone de collision avec l'image
+        //offset rajouté pour centrer la zone de collision avec l'image
         this.cy=y+(size/2)+(size/10);
     }
-
-
 
     public Boolean getFirstUse() {
         return firstUse;
@@ -60,15 +56,13 @@ public class Balle {
         return y;
     }
 
-
     public Drawable getBalle(int key) {
         return balle.get(key);
     }
 
     public void incrementY(int mvt){
-        setY(getY()-mvt*speed);
+        setY(getY()-mvt);
     }
-
 
     public int getSize() {
         return size;

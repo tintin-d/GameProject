@@ -14,7 +14,6 @@ import java.util.Random;
 public class Target {
     private HashMap<Integer,Drawable> target=new HashMap<Integer,Drawable>();
     private float x,y;
-    private int speed;
     private Boolean firstUse=true;
     private  boolean touched;
     private float cx,cy;
@@ -60,7 +59,7 @@ public class Target {
 
     public void setX(float x) {
         this.x = x;
-        //offcet rajouté pour centrer la zone de collision avec l'image
+        //offset rajouté pour centrer la zone de collision avec l'image
         this.cx=x+(size/2)-(size/30);
     }
 
